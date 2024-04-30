@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Red_Social_Proyecto.props" />
+</Project>
