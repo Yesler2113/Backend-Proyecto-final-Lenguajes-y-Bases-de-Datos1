@@ -56,6 +56,18 @@ namespace Red_Social_Proyecto.Controllers
             return StatusCode(tasksResponse.StatusCode, tasksResponse);
         }
 
+        [HttpGet("user/{userId}/feed")]
+        public async Task<IActionResult> GetPublicationsForUserAndFollowers(Guid userId)
+        {
+            var publications = await _publicationService.GetPublicationsForUserAndFollowersAsync(userId.ToString());
+            if (publications == null || !publications.Any())
+            {
+                return NotFound("No se encontraron publicaciones para el usuario y los usuarios seguidos.");
+            }
+            return Ok(publications);
+        }
+
+
         [HttpDelete("{publicationId}")]
         public async Task<IActionResult> DeletePublication(Guid publicationId)
         {

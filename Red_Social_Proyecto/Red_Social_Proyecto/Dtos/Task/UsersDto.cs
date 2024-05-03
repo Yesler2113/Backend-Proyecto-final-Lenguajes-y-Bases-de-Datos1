@@ -6,9 +6,9 @@
         public string Email { get; set; } 
         public string UserName { get; set; }
         public DateTime RegistrationDate { get; set; }
-        public string PhotoUrl { get; set; }
-        public string Biography { get; set; }
-        public string SocialMediaLinks { get; set; }
+        public string? PhotoUrl { get; set; }
+        public string? Biography { get; set; }
+        public string? SocialMediaLinks { get; set; }
     }
 }
 

@@ -14,15 +14,15 @@ namespace Red_Social_Proyecto.Entities
 
         [Column("photo_url")]
         [MaxLength(300)]
-        public string PhotoUrl { get; set; }
+        public string? PhotoUrl { get; set; }
 
         [Column("biography")]
         [MaxLength(300)]
-        public string Biography { get; set; }
+        public string? Biography { get; set; }
 
         [Column("links")]
         [MaxLength(300)]
-        public string SocialMediaLinks { get; set; }
+        public string? SocialMediaLinks { get; set; }
 
         public virtual ICollection<PublicationEntity> Publications { get; set; }
         public virtual ICollection<CommentsEntity> Comments { get; set; }

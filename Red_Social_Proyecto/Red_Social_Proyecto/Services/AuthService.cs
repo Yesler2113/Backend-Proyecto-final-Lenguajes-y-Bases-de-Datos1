@@ -7,6 +7,8 @@ using System.Security.Claims;
 using System.Text;
 using Red_Social_Proyecto.Services.Interfaces;
 using Red_Social_Proyecto.Entities;
+using Red_Social_Proyecto.Services.LogsService;
+using Red_Social_Proyecto.Dtos.Task;
 
 namespace todo_list_backend.Services
 {
@@ -15,6 +17,7 @@ namespace todo_list_backend.Services
         private readonly SignInManager<UsersEntity> _signInManager;
         private readonly UserManager<UsersEntity> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly LogService _logService;
         private readonly HttpContext _httpContext;
         private readonly string _USER_ID;
 
@@ -22,12 +25,14 @@ namespace todo_list_backend.Services
             SignInManager<UsersEntity> signInManager,
             UserManager<UsersEntity> userManager,
             IConfiguration configuration,
-            IHttpContextAccessor httpContextAccessor
+            IHttpContextAccessor httpContextAccessor,
+            LogService logService
             )
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _configuration = configuration;
+            _logService = logService;
             _httpContext = httpContextAccessor.HttpContext!;
             var idClaim = _httpContext.User.Claims.
                 Where(x => x.Type == "UserId").
@@ -37,6 +42,9 @@ namespace todo_list_backend.Services
 
         public async Task<ResponseDto<LoginResponseDto>> LoginAsync(LoginDto dto)
         {
+            //checar si el usuario existe
+            
+
             var result = await _signInManager.PasswordSignInAsync(
                 dto.Email,
                 dto.Password,
@@ -47,6 +55,8 @@ namespace todo_list_backend.Services
             if (result.Succeeded)
             {
                 var userEntity = await _userManager.FindByEmailAsync(dto.Email);
+
+                await _logService.LogActionAsync("Iniciaste Sesion", userEntity.Id);
 
                 var authClaims = new List<Claim>
                 {
@@ -78,11 +88,20 @@ namespace todo_list_backend.Services
                 };
             }
 
+            //await _logService.LogActionAsync(new UserLogDto
+            //{
+            //    UserId = dto.Email,
+            //    Action = "Fallo el inicio de sesión"
+            //});
+
+
+            
+
             return new ResponseDto<LoginResponseDto>
             {
                 StatusCode = 400,
                 Status = false,
-                Message = "Fallo el inicio de sesión",
+                Message = "Fallo el inicio de sesión. ",
                 Data = null 
             };
         }
@@ -92,7 +111,7 @@ namespace todo_list_backend.Services
             var userEntity = await _userManager.FindByIdAsync(_USER_ID);
             var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Email, userEntity.Email),
+                    new Claim(ClaimTypes.Email, userEntity.Email!),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("UserId", userEntity.Id),
                 };
@@ -125,7 +144,7 @@ namespace todo_list_backend.Services
         private JwtSecurityToken GetToken(List<Claim> authClaims)
         {
             var authSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+                Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]!));
 
             var token = new JwtSecurityToken(
                     issuer: _configuration["JWT:ValidIssuer"],

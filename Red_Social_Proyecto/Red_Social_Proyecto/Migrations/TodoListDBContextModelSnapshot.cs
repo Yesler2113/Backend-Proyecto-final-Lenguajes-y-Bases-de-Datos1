@@ -190,8 +190,6 @@ namespace Red_Social_Proyecto.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CommentParentId");
-
                     b.HasIndex("ParentCommentId");
 
                     b.HasIndex("PublicationId");
@@ -350,7 +348,6 @@ namespace Red_Social_Proyecto.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Biography")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)")
                         .HasColumnName("biography");
@@ -390,7 +387,6 @@ namespace Red_Social_Proyecto.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("PhotoUrl")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)")
                         .HasColumnName("photo_url");
@@ -403,7 +399,6 @@ namespace Red_Social_Proyecto.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SocialMediaLinks")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)")
                         .HasColumnName("links");
@@ -480,13 +475,8 @@ namespace Red_Social_Proyecto.Migrations
 
             modelBuilder.Entity("Red_Social_Proyecto.Entities.CommentsEntity", b =>
                 {
-                    b.HasOne("Red_Social_Proyecto.Entities.CommentsEntity", "CommentParent")
-                        .WithMany("ChildComments")
-                        .HasForeignKey("CommentParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Red_Social_Proyecto.Entities.CommentsEntity", "ParentComment")
-                        .WithMany()
+                        .WithMany("ChildComments")
                         .HasForeignKey("ParentCommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -502,8 +492,6 @@ namespace Red_Social_Proyecto.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CommentParent");
 
                     b.Navigation("ParentComment");
 

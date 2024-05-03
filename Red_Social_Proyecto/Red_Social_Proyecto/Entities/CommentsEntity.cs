@@ -11,7 +11,7 @@ namespace Red_Social_Proyecto.Entities
         public Guid Id { get; set; }
 
         [Column("user_id")]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         [Column("publication_id")]
         public Guid PublicationId { get; set; }
@@ -32,9 +32,6 @@ namespace Red_Social_Proyecto.Entities
 
         [ForeignKey("PublicationId")]
         public PublicationEntity Publication { get; set; }
-
-        [ForeignKey("CommentParentId")]
-        public CommentsEntity CommentParent { get; set; }
 
         public virtual CommentsEntity ParentComment { get; set; }
         public virtual ICollection<CommentsEntity> ChildComments { get; set; }

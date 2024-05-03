@@ -48,26 +48,15 @@ namespace Red_Social_Proyecto.Services
                 UserName = model.UserName,
                 Email = model.Email,
                 RegistrationDate = DateTime.UtcNow,
-                PhotoUrl = model.PhotoUrl,
+                PhotoUrl = model.PhotoUrl!,
                 Biography = model.Biography,
-                SocialMediaLinks = model.SocialMediaLinks
+                SocialMediaLinks = model.SocialMediaLinks!
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password!);
             if (result.Succeeded)
             {
-                var roleResult = await _userManager.AddToRoleAsync(user, "USER"); // Cambia "User" por el rol deseado
-                if (!roleResult.Succeeded)
-                {
-                    // Manejo de error si la asignación del rol falla
-                    return new ResponseDto<UsersDto>
-                    {
-                        Status = false,
-                        StatusCode = 400,
-                        Message = String.Join("; ", roleResult.Errors.Select(e => e.Description)),
-                        Data = null
-                    };
-                }
+              
                 var usersDto = _mapper.Map<UsersDto>(user);
 
                 return new ResponseDto<UsersDto>
@@ -89,6 +78,21 @@ namespace Red_Social_Proyecto.Services
                 };
             }
         }
+
+        public async Task<ResponseDto<List<UsersDto>>> GetAllUsersAsync()
+        {
+            var users = _userManager.Users.ToList();
+            var usersDto = _mapper.Map<List<UsersDto>>(users);
+
+            return new ResponseDto<List<UsersDto>>
+            {
+                Status = true,
+                StatusCode = 200,
+                Message = "Usuarios recuperados correctamente",
+                Data = usersDto
+            };
+        }
+
 
 
 

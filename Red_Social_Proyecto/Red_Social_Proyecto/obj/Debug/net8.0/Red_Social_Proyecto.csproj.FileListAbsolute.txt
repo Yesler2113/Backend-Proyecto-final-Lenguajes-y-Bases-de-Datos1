@@ -240,3 +240,5 @@ C:\Users\Usuario\OneDrive\Documentos\Proyecto Red Social Lenguajes de Programaci
 C:\Users\Usuario\OneDrive\Documentos\Proyecto Red Social Lenguajes de Programacion\Proyecto Frontend y Backend\Red_Social_Proyecto\Red_Social_Proyecto\obj\Debug\net8.0\ref\Red_Social_Proyecto.dll
 C:\Users\Usuario\OneDrive\Documentos\Proyecto Red Social Lenguajes de Programacion\Proyecto Frontend y Backend\Red_Social_Proyecto\Red_Social_Proyecto\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\Usuario\OneDrive\Documentos\Proyecto Red Social Lenguajes de Programacion\Proyecto Frontend y Backend\Red_Social_Proyecto\Red_Social_Proyecto\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll
+C:\Users\Usuario\OneDrive\Documentos\Proyecto Red Social Lenguajes de Programacion\Proyecto Frontend y Backend\Red_Social_Proyecto\Red_Social_Proyecto\bin\Debug\net8.0\SendGrid.dll
+C:\Users\Usuario\OneDrive\Documentos\Proyecto Red Social Lenguajes de Programacion\Proyecto Frontend y Backend\Red_Social_Proyecto\Red_Social_Proyecto\bin\Debug\net8.0\StarkbankEcdsa.dll

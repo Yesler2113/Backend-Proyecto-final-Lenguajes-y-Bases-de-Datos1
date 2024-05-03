@@ -16,35 +16,31 @@ namespace Red_Social_Proyecto.Services
         private readonly TodoListDBContext _context;
         private readonly IMapper _mapper;
         private readonly IHubContext<CommentsHub> _hubContext;
+        private readonly HttpContext _httpContext;
+        private readonly string _USER_ID;
 
-        public CommentsService(TodoListDBContext context, IMapper mapper, IHubContext<CommentsHub> hubContext)
+        public CommentsService(TodoListDBContext context, IMapper mapper, IHubContext<CommentsHub> hubContext,
+            IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
             _hubContext = hubContext;
+            _httpContext = httpContextAccessor.HttpContext!;
+            var idClaim = _httpContext.User.Claims.
+                Where(x => x.Type == "UserId"). //Revertir el token y obtener el id del usuario
+                FirstOrDefault();
+            _USER_ID = idClaim?.Value!;
         }
 
         public async Task<ResponseDto<CommentsDto>> CreateCommentAsync(CommentsCreateDto model)
         {
             var commentEntity = _mapper.Map<CommentsEntity>(model);
 
-            // Verificar si el CommentParentId es válido si está presente
-            if (commentEntity.CommentParentId.HasValue)
-            {
-                var parentComment = await _context.Comments.FindAsync(commentEntity.CommentParentId.Value);
-                if (parentComment == null)
-                {
-                    return new ResponseDto<CommentsDto>
-                    {
-                        Status = false,
-                        StatusCode = 400,
-                        Message = "El comentario padre especificado no existe.",
-                        Data = null
-                    };
-                }
-            }
-
+           
             commentEntity.CommentDate = DateTime.UtcNow;
+
+            commentEntity.UserId = _USER_ID;
+
             _context.Comments.Add(commentEntity);
             await _context.SaveChangesAsync();
 
@@ -87,19 +83,9 @@ namespace Red_Social_Proyecto.Services
                 };
             }
 
-            // Opcional: Verificar si el comentario tiene respuestas antes de eliminar
-            var replies = await _context.Comments
-                .AnyAsync(c => c.CommentParentId == commentId);
-            if (replies)
-            {
-                return new ResponseDto<bool>
-                {
-                    Status = false,
-                    StatusCode = 400,
-                    Message = "No se puede eliminar un comentario que tiene respuestas",
-                    Data = false
-                };
-            }
+          
+
+            
 
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();

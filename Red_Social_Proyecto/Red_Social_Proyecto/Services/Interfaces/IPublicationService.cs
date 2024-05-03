@@ -11,5 +11,6 @@ namespace Red_Social_Proyecto.Services.Interfaces
         Task<ResponseDto<bool>> DeletePublicationAsync(Guid publicationId);
         Task<ResponseDto<List<PublicationDto>>> GetListAsync(string searchTerm = "");
         Task<List<PublicationDto>> GetPublicationsByUserAsync(Guid userId);
+        Task<List<PublicationDto>> GetPublicationsForUserAndFollowersAsync(string userId);
     }
 }

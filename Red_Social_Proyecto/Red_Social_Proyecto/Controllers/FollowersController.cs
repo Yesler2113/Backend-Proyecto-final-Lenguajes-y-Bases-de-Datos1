@@ -16,22 +16,7 @@ namespace Red_Social_Proyecto.Controllers
             _followService = followService;
         }
 
-        //[HttpPost("{followerId}/follow/{followedId}")]
-        //public async Task<IActionResult> FollowUser([FromBody] FollowDto followDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var response = await _followService.FollowUserAsync(followDto.FollowerId, followDto.FollowedId);
-        //    if (!response.Status)
-        //    {
-        //        return BadRequest(response.Message);
-        //    }
-
-        //    return CreatedAtAction(nameof(FollowUser), response.Data);
-        //}
+        
         [HttpPost("{followerId}/follow/{followedId}")]
         public async Task<IActionResult> FollowUser(string followerId, string followedId)
         {

@@ -24,6 +24,15 @@ namespace Red_Social_Proyecto.Helpers
             CreateMap<FollowCreateDto, FollowEntity>();
             CreateMap<InteractionEntity, InteractionDto>();
             CreateMap<InteractionCreateDto, InteractionEntity>();
+            CreateMap<PublicationEntity, PublicationDto>()
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+            CreateMap<UsersEntity, UsersDto>();
+
+
+            //mapeo para los logs
+            CreateMap<LogsEntity, UserLogDto>();
+            CreateMap<UserLogDto, LogsEntity>();
+
 
         }
     }
