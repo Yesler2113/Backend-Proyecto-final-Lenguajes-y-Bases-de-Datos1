@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Red_Social_Proyecto.Database;
 using Red_Social_Proyecto.Dtos;
 using Red_Social_Proyecto.Dtos.Task;
 using Red_Social_Proyecto.Entities;
 using Red_Social_Proyecto.Services.Interfaces;
+using Red_Social_Proyecto.SignalRConnect;
 
 namespace Red_Social_Proyecto.Services
 {
@@ -13,11 +15,21 @@ namespace Red_Social_Proyecto.Services
     {
         private readonly TodoListDBContext _context;
         private readonly IMapper _mapper;
+        private readonly IHubContext<FollowHub> _hubContext;
+        private readonly HttpContext _httpContext;
+        private readonly string _USER_ID;
 
-        public FollowService(TodoListDBContext context, IMapper mapper)
+        public FollowService(TodoListDBContext context, IMapper mapper, IHubContext<FollowHub> hubContext,
+            IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _hubContext = hubContext;
+            _httpContext = httpContextAccessor.HttpContext!;
+            var idClaim = _httpContext.User.Claims.
+               Where(x => x.Type == "UserId"). //Revertir el token y obtener el id del usuario
+               FirstOrDefault();
+            _USER_ID = idClaim?.Value!;
         }
 
         public async Task<ResponseDto<FollowDto>> FollowUserAsync(string followerId, string followedId)
@@ -54,8 +66,15 @@ namespace Red_Social_Proyecto.Services
                 FollowDate = DateTime.UtcNow
             };
 
+            
+
             _context.Follows.Add(follow);
             await _context.SaveChangesAsync();
+
+
+            // Enviar notificación
+            await _hubContext.Clients.All.SendAsync("ReceiveFollowNotification", $"{followerId} ha comenzado a seguir a " +
+                $"{followedId}");
 
             return new ResponseDto<FollowDto>
             {

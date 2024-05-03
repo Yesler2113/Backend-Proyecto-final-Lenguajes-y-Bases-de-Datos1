@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\Red_Social_Proyecto.props" />
-</Project>

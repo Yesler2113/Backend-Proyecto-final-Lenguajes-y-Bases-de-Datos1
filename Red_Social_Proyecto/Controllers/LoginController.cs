@@ -61,5 +61,17 @@ namespace Red_Social_Proyecto.Controllers
         }
 
 
+        [HttpGet("list-users")]
+        public async Task<ActionResult<ResponseDto<List<UsersDto>>>> GetAllUsers()
+        {
+            var response = await _usersService.GetAllUsersAsync();
+            if (!response.Status)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
     }
 }

@@ -4,8 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Red_Social_Proyecto.Database;
 using Red_Social_Proyecto.Entities;
+using Red_Social_Proyecto.ResetPassword;
+using Red_Social_Proyecto.ResetPassword.Service;
 using Red_Social_Proyecto.Services;
 using Red_Social_Proyecto.Services.Interfaces;
+using Red_Social_Proyecto.Services.LogsService;
+using Red_Social_Proyecto.Services.LogsService.Interface;
+using Red_Social_Proyecto.SignalRConnect;
 using System.Text;
 using todo_list_backend.Database;
 using todo_list_backend.Services;
@@ -24,11 +29,16 @@ namespace todo_list_backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSignalR();
             // Add DbContext
 
             
             services.AddDbContext<TodoListDBContext>(options =>
                            options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDbContext<LogDbContext>(options =>
+                                      options.UseNpgsql(Configuration.GetConnectionString("LogsConnection")));
 
             // Add Custom Services
 
@@ -39,9 +49,13 @@ namespace todo_list_backend
             services.AddTransient<ICommentsService, CommentsService>();
             services.AddTransient<IFollowService, FollowService>();
             services.AddTransient<IInteractionService, InteractionService>();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<ILogService, LogService>();
 
             // Add Automapper Service
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddScoped<LogService>();
 
             services.AddHttpContextAccessor();
 
@@ -55,13 +69,25 @@ namespace todo_list_backend
                 options.User.RequireUniqueEmail = true;
 
                 // Configuraciones de validación de contraseña
-                options.Password.RequireDigit = false;
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
                 options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
+                options.Password.RequiredUniqueChars = 1;
 
-                options.SignIn.RequireConfirmedAccount = false;
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.Lockout.AllowedForNewUsers = true;
+
+                // User settings
+                options.User.RequireUniqueEmail = true;
+
+                // Sign-in settings
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedPhoneNumber = false;
             }).AddEntityFrameworkStores<TodoListDBContext>()
                 .AddDefaultTokenProviders();
 
@@ -123,6 +149,10 @@ namespace todo_list_backend
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<PublicationHub>("/publicationHub");
+                endpoints.MapHub<CommentsHub>("/commentsHub");
+                endpoints.MapHub<InteractionHub>("/interactionHub");
+                endpoints.MapHub<FollowHub>("/followHub");
             });
         }
     }

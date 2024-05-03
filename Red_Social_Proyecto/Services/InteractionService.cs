@@ -6,6 +6,8 @@ using Red_Social_Proyecto.Dtos.ValidationsDto;
 using Red_Social_Proyecto.Dtos;
 using Red_Social_Proyecto.Entities;
 using Red_Social_Proyecto.Services.Interfaces;
+using Microsoft.AspNetCore.SignalR;
+using Red_Social_Proyecto.SignalRConnect;
 
 namespace Red_Social_Proyecto.Services
 {
@@ -13,11 +15,13 @@ namespace Red_Social_Proyecto.Services
     {
         private readonly TodoListDBContext _context;
         private readonly IMapper _mapper;
+        private readonly IHubContext<InteractionHub> _hubContext;
 
-        public InteractionService(TodoListDBContext context, IMapper mapper)
+        public InteractionService(TodoListDBContext context, IMapper mapper, IHubContext<InteractionHub> hubContext)
         {
             _context = context;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         public async Task<ResponseDto<InteractionDto>> CreateLikeAsync(InteractionCreateDto interactionDto)
@@ -49,6 +53,10 @@ namespace Red_Social_Proyecto.Services
 
             _context.Interactions.Add(interaction);
             await _context.SaveChangesAsync();
+
+            // Enviar notificación
+            await _hubContext.Clients.All.SendAsync("ReceiveInteractionNotification", $"Nuevo like de Usuario ID: " +
+                $"{interaction.UserId} en Publicación ID: {interaction.PublicationId}");
 
             return new ResponseDto<InteractionDto>
             {

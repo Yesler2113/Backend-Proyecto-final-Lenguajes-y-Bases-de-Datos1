@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Red_Social_Proyecto.Dtos;
 using Red_Social_Proyecto.Dtos.Task;
@@ -12,7 +11,6 @@ namespace Red_Social_Proyecto.Controllers
 {
     [Route("api/publication")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
     public class PublicationController : ControllerBase
     {
         private readonly IPublicationService _publicationService;
@@ -22,6 +20,7 @@ namespace Red_Social_Proyecto.Controllers
             this._publicationService = publicationService;
         }
 
+        
         [HttpPost]
         public async Task<IActionResult> CreatePublication([FromBody] PublicationCreateDto publicationDto)
         {
@@ -49,6 +48,25 @@ namespace Red_Social_Proyecto.Controllers
             }
             return Ok(publications);
         }
+        [HttpGet]
+        public async Task<ActionResult<ResponseDto<List<PublicationDto>>>> GetAll(string searchTerm = "")
+        {
+            var tasksResponse = await _publicationService.GetListAsync(searchTerm);
+
+            return StatusCode(tasksResponse.StatusCode, tasksResponse);
+        }
+
+        [HttpGet("user/{userId}/feed")]
+        public async Task<IActionResult> GetPublicationsForUserAndFollowers(Guid userId)
+        {
+            var publications = await _publicationService.GetPublicationsForUserAndFollowersAsync(userId.ToString());
+            if (publications == null || !publications.Any())
+            {
+                return NotFound("No se encontraron publicaciones para el usuario y los usuarios seguidos.");
+            }
+            return Ok(publications);
+        }
+
 
         [HttpDelete("{publicationId}")]
         public async Task<IActionResult> DeletePublication(Guid publicationId)

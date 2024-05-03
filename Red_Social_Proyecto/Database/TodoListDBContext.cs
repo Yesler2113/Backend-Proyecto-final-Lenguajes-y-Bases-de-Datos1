@@ -8,7 +8,7 @@ namespace Red_Social_Proyecto.Database
 {
     public class TodoListDBContext : IdentityDbContext<UsersEntity>
     {
-        public TodoListDBContext(DbContextOptions options) : base(options)
+        public TodoListDBContext(DbContextOptions<TodoListDBContext> options) : base(options)
         {
         }
 
@@ -31,7 +31,7 @@ namespace Red_Social_Proyecto.Database
                 .HasMany(u => u.Publications)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade);  // Considera la acción de cascada apropiada
+                .OnDelete(DeleteBehavior.Cascade);  
 
             builder.Entity<UsersEntity>()
                 .HasMany(u => u.Comments)
@@ -57,12 +57,12 @@ namespace Red_Social_Proyecto.Database
                 .HasForeignKey(f => f.FollowedId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<CommentsEntity>()
-           .HasOne(c => c.CommentParent) 
-           .WithMany(c => c.ChildComments) 
-           .HasForeignKey(c => c.CommentParentId) 
-           .IsRequired(false) 
-           .OnDelete(DeleteBehavior.SetNull);
+           // builder.Entity<CommentsEntity>()
+           //.HasOne(c => c.CommentParent)
+           //.WithMany(c => c.ChildComments)
+           //.HasForeignKey(c => c.CommentParentId)
+           //.IsRequired(false)
+           //.OnDelete(DeleteBehavior.SetNull);
         }
 
         //public DbSet<UsersEntity> Users { get; set; }

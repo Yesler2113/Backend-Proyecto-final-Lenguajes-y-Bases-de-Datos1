@@ -38,6 +38,22 @@ namespace todo_list_backend.Database
                     };
                     await userManager.CreateAsync(normalUser, "Temporal002*");
                     await userManager.AddToRoleAsync(normalUser, "USER");
+
+                    var normalUser2 = new UsersEntity
+                    {
+                        UserName = "Ander24",
+                        Email = "ander21arge@gmail.com"
+                    };
+                    await userManager.CreateAsync(normalUser2, "Temporal003*");
+                    await userManager.AddToRoleAsync(normalUser2, "USER");
+
+                    var normalUser3 = new UsersEntity
+                    {
+                        UserName = "Ander25",
+                        Email = "diazyes2001@gmail.com"
+                    };
+                    await userManager.CreateAsync(normalUser3, "Temporal004*");
+                    await userManager.AddToRoleAsync(normalUser3, "USER");
                 }
 
             }

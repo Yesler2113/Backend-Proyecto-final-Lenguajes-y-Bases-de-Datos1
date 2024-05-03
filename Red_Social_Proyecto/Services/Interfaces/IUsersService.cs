@@ -9,6 +9,6 @@ namespace Red_Social_Proyecto.Services.Interfaces
     public interface IUsersService
     {
         Task<ResponseDto<UsersDto>> CreateUserAsync(UsersCreateDto model);
-        
+        Task<ResponseDto<List<UsersDto>>> GetAllUsersAsync();
     }
 }

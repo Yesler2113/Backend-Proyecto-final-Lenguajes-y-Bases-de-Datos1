@@ -6,5 +6,7 @@
         public Guid UserId { get; set; }
         public string Content { get; set; }
         public DateTime PublicationDate { get; set; }
+
+        public UsersDto User { get; set; }
     }
 }
